@@ -1,5 +1,4 @@
 const { Genre, validate } = require('../models/genre');
-// const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
@@ -18,6 +17,12 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+
+    const genres = await Genre.find();
+    for (let i = 0; i < genres.length; i++) {
+        if (genres[i].name === req.body.name)
+            return res.status(400).send("genre already exists");
+    }
 
     let genre = new Genre({ name: req.body.name });
     genre = await genre.save();
